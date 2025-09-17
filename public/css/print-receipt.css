@@ -1,0 +1,29 @@
+@media print {
+    body {
+        margin: 0;
+        padding: 10px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 10pt;
+        color: #000;
+    }
+
+    .receipt-container {
+        width: 280px; /* Common width for 80mm receipt paper */
+    }
+
+    .text-center { text-align: center; }
+    .font-bold { font-weight: bold; }
+    .text-2xl { font-size: 1.5rem; }
+    .text-xl { font-size: 1.25rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .w-full { width: 100%; }
+    .border-b { border-bottom: 1px dashed #000; }
+    .py-2 { padding-top: 4px; padding-bottom: 4px; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+}
