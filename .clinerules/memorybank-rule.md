@@ -121,11 +121,13 @@ The following tables and their relationships are crucial for the enhanced cash m
     *   **Removed Columns**: `remaining_balance` (now a dynamic accessor).
     *   **Relationships**:
         *   `belongsTo(CashierDutyLog::class)`: Links a transaction to the cashier's duty log during which it occurred.
+        *   `hasMany(Sale::class)`: A transaction can have multiple sales.
         *   `hasMany(Payment::class)`: A transaction can have multiple payments.
         *   `belongsTo(OrderType::class)`: Links to the order type of the transaction.
     *   **Accessors**:
         *   `getRemainingBalanceAttribute()`: Dynamically calculates `adjusted_total - payments->sum('amount_received')`.
         *   `getAdjustedTotalAttribute()`: Dynamically calculates the total amount considering returned items from `StockMovement`.
+        *   `getDispenseStatusAttribute()`: Dynamically calculates the dispense status of a transaction based on its sales and their stock movements.
 
 *   **`payments`**: This table stores the details of each payment event.
     *   `id`: Primary Key
@@ -273,6 +275,8 @@ The following tables and their relationships are crucial for the enhanced cash m
                 *   `unpaid`: Filters for COD transactions (`payment_method_id = 7`) where `total_amount > sum(amount_received)`.
                 *   `paid`: Filters for transactions (excluding Client Credit `payment_method_id = 3`) where `total_amount <= sum(amount_received)`. This includes all fully paid transactions (Cash, Card, Check, Paymaya, and fully paid COD).
                 *   `not_applicable`: Filters for Client Credit transactions (`payment_method_id = 3`).
+        *   **New Feature**: Added a "Dispense Status" column to the transaction list, with conditional styling.
+        *   **New Feature**: Replaced the "Edit" button with a conditional "Delete" button that appears only for transactions with a "Pending" dispense status. The deletion is protected by an admin password confirmation.
 
 *   **`app/Livewire/Remittances.php`**:
     *   **Properties**: `$showAddPaymentModal`, `$transactionId`, `remittancePaymentMethodId`, `remittanceAmountReceived`, `remittanceReferenceNumber`, `remittanceCheckNumber`, `remittanceAmountChange`, `$searchClient`, `$filteredClients`, `$selectedClientId`, `$selectedClientName`.
@@ -360,6 +364,8 @@ The following tables and their relationships are crucial for the enhanced cash m
 *   **`resources/views/livewire/add-sale.blade.php`**:
     *   Debounce (`.debounce.500ms`) added to product quantity input fields.
     *   "Checkout Modal" and "Receipt Modal" updated to reflect `total_amount` from `Transaction` and dynamic `remaining_balance`.
+    *   **New Feature**: Receipts now provide a breakdown of paid and free items.
+    *   **New Feature**: Print functionality now isolates the receipt content and formats it for thermal printers.
 
 *   **`resources/views/livewire/cashier-module.blade.php`**:
     *   Debounce (`.debounce.500ms`) added to cash denomination quantity input fields in "Start Shift" and "End Shift" modals.
@@ -368,6 +374,8 @@ The following tables and their relationships are crucial for the enhanced cash m
 *   **`resources/views/livewire/transaction-list.blade.php`**:
     *   Date range filter added with "Start Date" and "End Date" inputs (max date set to today).
     *   Transaction table and "Receipt Modal" updated to display `total_amount` and dynamic `remaining_balance` from `Transaction`, and payment details from the `payments` relationship.
+    *   **New Feature**: Receipts now provide a breakdown of paid and free items, consistent with the `add-sale` page.
+    *   **New Feature**: Print functionality now isolates the receipt content and formats it for thermal printers.
 *   **`resources/views/livewire/fulfill-orders-module.blade.php`**:
     *   Added a "Customer Name" column to both the "Pending Transactions for Dispense" and "Fulfilled Orders" tables to display the client's name associated with each transaction.
     *   **Inline Status Display**:
